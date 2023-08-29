@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Xml;
 
 namespace Mariani_ElaborazioneCSV
 {
@@ -16,6 +18,7 @@ namespace Mariani_ElaborazioneCSV
         {
             InitializeComponent();
             Azione1();
+            Azione4();
         }
 
         public string fileName1 = @"mariani1.csv";
@@ -37,12 +40,12 @@ namespace Mariani_ElaborazioneCSV
                 {
                     if (i == 0)
                     {
-                        writer.WriteLine(s + ";Valore Randomico;Campo Cancellazione Logica;Campo Univoco" );
+                        writer.WriteLine(s + ";Valore Randomico;Campo Cancellazione Logica;Campo Univoco");
                     }
                     else
                     {
                         int valore = r.Next(10, 21);
-                        writer.WriteLine(s + ";" + valore + ";false;" + i);
+                        writer.WriteLine(s + ";" + valore + ";false;" + i +"");
                     }
                     i++;
                     s = reader.ReadLine();
@@ -143,18 +146,16 @@ namespace Mariani_ElaborazioneCSV
             {
                 if (i != 0)
                 {
-                    writer.WriteLine(s.PadRight(70));
+                    writer.WriteLine(s.PadRight(200));
                 }
                 else
                 {
-                    writer.WriteLine(s);
+                    writer.WriteLine(s.PadRight(200));
                 }
 
                 s = reader.ReadLine();
                 i++;
             }
-
-            
 
             reader.Close();
             writer.Close();
@@ -216,40 +217,38 @@ namespace Mariani_ElaborazioneCSV
             int riga = Azione7(ricerca);
             int i = 0;
             int successo = 0;
-            StreamReader reader = new StreamReader(fileName1);
-            StreamWriter writer = new StreamWriter("temporaneo.csv");
+            var readStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Read, FileShare.Read);
+            BinaryReader read = new BinaryReader(readStream);
 
+            //Legge i dati e li converte in stringa
+            readStream.Seek(0, SeekOrigin.Begin); 
+            readStream.Seek((200 * riga), SeekOrigin.Current);
 
-            string s = reader.ReadLine();
-            while (s != null)
-            {
-                String[] split = s.Split(';');
-                String[] split1= split[7].Split(' ');
+            byte[] data = new byte[200];
+            readStream.Read(data, 0, 200);
+            string s = Encoding.ASCII.GetString(data);
 
+            MessageBox.Show(s);
+            readStream.Close();
+            read.Close();
+            
+            String[] split = s.Split(';');
+            String[] split1 = split[7].Split(' ');
 
-                if (split1[0] == riga.ToString())
-                {
-                    
+            var writeStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Write, FileShare.Write);
+            BinaryWriter writer = new BinaryWriter(writeStream);
 
-                    writer.WriteLine($"{split[0]};{split[1]};{split[2]};{split[3]};{split[4]};{split[5]};true;{split[7]}");
-                    successo = 1;
-                    break;
-                }
-                else
-                {
-                    writer.WriteLine(s);
-                    successo = -1;
-                }
-                
-                i++;
-                s = reader.ReadLine();
-            }
+            writeStream.Seek(0, SeekOrigin.Begin);
+            writeStream.Seek((200 * riga), SeekOrigin.Current);
 
+            //Scrive i dati
+            string linea = $"{split[0]};{split[1]};{split[2]};{split[3]};{split[4]};{split[5]};true;{split[7]}".PadRight(200);
+            byte[] data2 = Encoding.ASCII.GetBytes(linea);
+            writer.Write(data2);
+            successo = 1;
 
             writer.Close();
-            reader.Close();
-
-            File.Replace("temporaneo.csv", fileName1, "backup.csv");
+            writeStream.Close();
 
             return successo;
         }

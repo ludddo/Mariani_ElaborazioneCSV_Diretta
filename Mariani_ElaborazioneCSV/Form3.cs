@@ -57,10 +57,11 @@ namespace Mariani_ElaborazioneCSV
 
         private void Azione8(int anno, string regione, float t_femm, float t_masc, float t_both, int val_rand, string logico, int linea)
         {
-            StreamReader reader = new StreamReader("mariani1.csv");
-            StreamWriter writer = new StreamWriter("appoggio.csv");
+            //StreamReader reader = new StreamReader("mariani1.csv");
 
-            string s;
+
+
+            /*string s;
             int i = 0;
             s = reader.ReadLine();
             
@@ -75,16 +76,19 @@ namespace Mariani_ElaborazioneCSV
                     if (rigaAttuale == linea)
                     {
                         s = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{linea}".PadRight(70);
-                        writer.WriteLine(s);
+                        byte[] data = Encoding.ASCII.GetBytes(s);
+                        writer.Write(data);
                     }
                     else
                     {
-                        writer.WriteLine(s);
+                        byte[] data = Encoding.ASCII.GetBytes(s);
+                        writer.Write(data);
                     }
                 }
                 else
                 {
-                    writer.WriteLine(s);
+                    byte[] data = Encoding.ASCII.GetBytes(s);
+                    writer.Write(data);
                 }
 
                 i++;
@@ -92,9 +96,19 @@ namespace Mariani_ElaborazioneCSV
             }
 
             writer.Close();
-            reader.Close();
+            reader.Close();*/
 
-            File.Replace("appoggio.csv", "mariani1.csv", "backup.csv");
+            var oStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Write, FileShare.Read);
+            BinaryWriter writer = new BinaryWriter(oStream);
+
+            oStream.Seek(0, SeekOrigin.Begin);
+
+            oStream.Seek((200 * linea), SeekOrigin.Current);
+            string s = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{linea}".PadRight(200);
+            byte[] data = Encoding.ASCII.GetBytes(s);
+            writer.Write(data);
+
+            writer.Close();
         }
 
 

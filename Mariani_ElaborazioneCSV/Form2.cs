@@ -34,7 +34,7 @@ namespace Mariani_ElaborazioneCSV
             reader.Close();
             var oStream = new FileStream("mariani1.csv", FileMode.Append, FileAccess.Write, FileShare.Read);
             BinaryWriter writer = new BinaryWriter(oStream);
-            string linea = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{i}";
+            string linea = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{i}".PadRight(200);
             byte[] data = Encoding.ASCII.GetBytes(linea);
             writer.Write(data);
 
