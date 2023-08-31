@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace Mariani_ElaborazioneCSV
 {
     internal static class Program

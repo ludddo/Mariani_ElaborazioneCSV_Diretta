@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Elaborazione_CSV;
 
 namespace Mariani_ElaborazioneCSV
 {
@@ -55,63 +56,6 @@ namespace Mariani_ElaborazioneCSV
 
         }
 
-        private void Azione8(int anno, string regione, float t_femm, float t_masc, float t_both, int val_rand, string logico, int linea)
-        {
-            //StreamReader reader = new StreamReader("mariani1.csv");
-
-
-
-            /*string s;
-            int i = 0;
-            s = reader.ReadLine();
-            
-            while (s != null)
-            {
-                if (i != 0)
-                {
-                    string[] split = s.Split(';');
-                    string[] split1 = split[Lunghezza() - 1].Split(' ');
-                    int rigaAttuale = int.Parse(split1[0]);
-
-                    if (rigaAttuale == linea)
-                    {
-                        s = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{linea}".PadRight(70);
-                        byte[] data = Encoding.ASCII.GetBytes(s);
-                        writer.Write(data);
-                    }
-                    else
-                    {
-                        byte[] data = Encoding.ASCII.GetBytes(s);
-                        writer.Write(data);
-                    }
-                }
-                else
-                {
-                    byte[] data = Encoding.ASCII.GetBytes(s);
-                    writer.Write(data);
-                }
-
-                i++;
-                s = reader.ReadLine();
-            }
-
-            writer.Close();
-            reader.Close();*/
-
-            var oStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Write, FileShare.Read);
-            BinaryWriter writer = new BinaryWriter(oStream);
-
-            oStream.Seek(0, SeekOrigin.Begin);
-
-            oStream.Seek((200 * linea), SeekOrigin.Current);
-            string s = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{linea}".PadRight(200);
-            byte[] data = Encoding.ASCII.GetBytes(s);
-            writer.Write(data);
-
-            writer.Close();
-        }
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             string logicoString;
@@ -140,7 +84,7 @@ namespace Mariani_ElaborazioneCSV
 
                 string regione = textBox2.Text;
                 int rigaAsd = Ricerca(riga.ToString());
-                Azione8(anno, regione, t_femm, t_masc, t_both, val_rand, logicoString, riga);
+                ElaborazioneCSV.Azione8(anno, regione, t_femm, t_masc, t_both, val_rand, logicoString, riga);
                 // Message Box with title and icon
                 MessageBox.Show("Azione eseguita correttamente", "Informazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

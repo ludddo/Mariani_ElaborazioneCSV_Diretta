@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Xml;
-
+using Elaborazione_CSV;
 namespace Mariani_ElaborazioneCSV
 {
     public partial class Form1 : Form
@@ -17,151 +17,18 @@ namespace Mariani_ElaborazioneCSV
         public Form1()
         {
             InitializeComponent();
-            Azione1();
-            Azione4();
+            int giusto = ElaborazioneCSV.Azione1();
+            if ( giusto == 1)
+            {
+                MessageBox.Show("Caricare un file in bin/debug");
+            }
+            ElaborazioneCSV.Azione4();
+
         }
 
         public string fileName1 = @"mariani1.csv";
         public string fileName2 = @"mariani.csv";
         public Random r = new Random();
-
-        private void Azione1() 
-        {
-            string s;
-            int i = 0;
-            StreamWriter writer = new StreamWriter(fileName1, append: false);
-            
-            
-            if (File.Exists(fileName2))
-            {
-                StreamReader reader = new StreamReader(fileName2);
-                s = reader.ReadLine();
-                while (s != null)
-                {
-                    if (i == 0)
-                    {
-                        writer.WriteLine(s + ";Valore Randomico;Campo Cancellazione Logica;Campo Univoco");
-                    }
-                    else
-                    {
-                        int valore = r.Next(10, 21);
-                        writer.WriteLine(s + ";" + valore + ";false;" + i +"");
-                    }
-                    i++;
-                    s = reader.ReadLine();
-                }
-                reader.Close();
-            }
-            else
-            {
-                MessageBox.Show("Caricare il file csv in bin/debug");
-            }
-            writer.Close();
-            
-        }
-
-        private int Azione2() 
-        {
-            string s;
-            int count;
-            StreamReader reader = new StreamReader(fileName1);
-            s = reader.ReadLine();
-            reader.Close();
-            return count = s.Split(';').Length;
-            
-        }
-
-        private int Azione3()
-        {
-            StreamReader reader = new StreamReader(fileName1);
-            int lunghezzaStringa = 0, lunghezzaMax = 0, i = 0;
-            string s;
-
-            s = reader.ReadLine();
-            while (s != null)
-            {
-                lunghezzaStringa = s.Length;
-                if (i != 0)
-                {
-                    if (lunghezzaMax < lunghezzaStringa)
-                    {
-                        lunghezzaMax = s.Length;
-                    }
-                }
-                s = reader.ReadLine();
-                i++;
-            }
-            reader.Close();
-            return lunghezzaMax;
-        }
-
-        private int[] Azione3Avanzato()
-        {
-            StreamReader reader = new StreamReader(fileName1);
-            string s = reader.ReadLine();
-            int[] lunghezzaMax = new int[Azione2()];
-            int asd = 0;
-            s = reader.ReadLine();
-
-            while (s != null)
-            {
-                string[] split = s.Split(';');
-                string[] array = new string[Azione2()];
-                
-                for (int i = 0; i < Azione2(); i++)
-                {
-                    reader.DiscardBufferedData();
-                    reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
-                    s = reader.ReadLine();
-                    asd = 0;
-                    while (s != null)
-                    {
-                        string[] stringaSplit = s.Split(';');
-                        if (asd != 0)
-                        {
-                            if (lunghezzaMax[i] < stringaSplit[i].Length)
-                            {
-                                lunghezzaMax[i] = stringaSplit[i].Length;
-                            }
-
-                        }
-                        s = reader.ReadLine();
-                        asd++;
-                    }
-                }
-            }
-            reader.Close();
-            return lunghezzaMax;
-        }
-
-        private void Azione4()
-        {
-            string s;
-            int i = 0;
-            StreamReader reader = new StreamReader(fileName1);
-            StreamWriter writer = new StreamWriter("temporaneo.csv");
-
-            s = reader.ReadLine();
-            while (s != null)
-            {
-                if (i != 0)
-                {
-                    writer.WriteLine(s.PadRight(200));
-                }
-                else
-                {
-                    writer.WriteLine(s.PadRight(200));
-                }
-
-                s = reader.ReadLine();
-                i++;
-            }
-
-            reader.Close();
-            writer.Close();
-
-            File.Replace("temporaneo.csv", fileName1, "backup.csv");
-        }
         
         private void Azione6()
         {
@@ -186,96 +53,29 @@ namespace Mariani_ElaborazioneCSV
             reader.Close();
         }
 
-        private int Azione7(string parola)
-        {
-            StreamReader reader = new StreamReader(fileName1);
-            string s;
-            int i = 0;
-            s = reader.ReadLine();
-            while (s != null)
-            {
-
-                String[] split = s.Split(';');
-                String[] split1 = split[Azione2()-1].Split(' ');
-
-                if (split1[0] == parola)
-                {
-                    reader.Close();
-                    return i;
-                }
-
-                i++;
-                s = reader.ReadLine();
-
-            }
-            reader.Close();
-            return -1;
-        }
-
-        private int Azione9(string ricerca)
-        {
-            int riga = Azione7(ricerca);
-            int i = 0;
-            int successo = 0;
-            var readStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Read, FileShare.Read);
-            BinaryReader read = new BinaryReader(readStream);
-
-            //Legge i dati e li converte in stringa
-            readStream.Seek(0, SeekOrigin.Begin); 
-            readStream.Seek((200 * riga), SeekOrigin.Current);
-
-            byte[] data = new byte[200];
-            readStream.Read(data, 0, 200);
-            string s = Encoding.ASCII.GetString(data);
-
-            MessageBox.Show(s);
-            readStream.Close();
-            read.Close();
-            
-            String[] split = s.Split(';');
-            String[] split1 = split[7].Split(' ');
-
-            var writeStream = new FileStream("mariani1.csv", FileMode.Open, FileAccess.Write, FileShare.Write);
-            BinaryWriter writer = new BinaryWriter(writeStream);
-
-            writeStream.Seek(0, SeekOrigin.Begin);
-            writeStream.Seek((200 * riga), SeekOrigin.Current);
-
-            //Scrive i dati
-            string linea = $"{split[0]};{split[1]};{split[2]};{split[3]};{split[4]};{split[5]};true;{split[7]}".PadRight(200);
-            byte[] data2 = Encoding.ASCII.GetBytes(linea);
-            writer.Write(data2);
-            successo = 1;
-
-            writer.Close();
-            writeStream.Close();
-
-            return successo;
-        }
-
         private void azione1_Click(object sender, EventArgs e)
         {
-            Azione1();
+            ElaborazioneCSV.Azione1();
             MessageBox.Show("Azione eseguita correttamente", "Informazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void azione2_Click(object sender, EventArgs e)
         {
             MessageBoxIcon icon = MessageBoxIcon.Information;
-            MessageBox.Show("In un Record ci sono " + Azione2() + " Campi", "Azione 2", MessageBoxButtons.OK, icon);
+            MessageBox.Show("In un Record ci sono " + ElaborazioneCSV.Azione2() + " Campi", "Azione 2", MessageBoxButtons.OK, icon);
         }
 
         private void azione3_Click(object sender, EventArgs e)
         {
             groupBox1.Show();
             listView1.Clear();
-            int[] ints = new int[Azione2()];
+            int[] ints = new int[ElaborazioneCSV.Azione2()];
             int temp;
-            ints = Azione3Avanzato();
+            ints = ElaborazioneCSV.Azione3Avanzato();
 
             StreamWriter writer = new StreamWriter("temp.txt", append: false);
-            writer.WriteLine("In un Record ci sono massimo " + Azione3() + " caratteri\n");
-            for (int i = 0; i < Azione2(); i++)
+            writer.WriteLine("In un Record ci sono massimo " + ElaborazioneCSV.Azione3() + " caratteri\n");
+            for (int i = 0; i < ElaborazioneCSV.Azione2(); i++)
             {
                 temp = i + 1;
                 writer.WriteLine("Nel " + temp + " campo ci sono massimo " + ints[i] + " caratteri");
@@ -293,7 +93,7 @@ namespace Mariani_ElaborazioneCSV
 
         private void azione4_Click(object sender, EventArgs e)
         {
-            Azione4();
+            ElaborazioneCSV.Azione4();
             MessageBox.Show("Azione eseguita correttamente", "Informazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -317,7 +117,7 @@ namespace Mariani_ElaborazioneCSV
 
         private void azione7_invia_Click(object sender, EventArgs e)
         {
-            int linea = Azione7(textBox1.Text);
+            int linea = ElaborazioneCSV.Azione7(textBox1.Text);
             groupBox3.Hide();
             if (linea != -1)
             {
@@ -344,7 +144,7 @@ namespace Mariani_ElaborazioneCSV
 
         private void azioneInvia9_Click(object sender, EventArgs e)
         {
-            int successo = Azione9(textBox2.Text);
+            int successo = ElaborazioneCSV.Azione9(textBox2.Text);
             groupBox4.Hide();
             if (successo == 1)
             {

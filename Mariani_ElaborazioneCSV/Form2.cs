@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Elaborazione_CSV;
 
 namespace Mariani_ElaborazioneCSV
 {
@@ -20,27 +21,6 @@ namespace Mariani_ElaborazioneCSV
             InitializeComponent();
         }
 
-        private void Azione5(string anno, string regione, float t_femm, float t_masc, float t_both, int val_rand, string logico)
-        {
-            //
-            int i = 0;
-            StreamReader reader = new StreamReader("mariani1.csv");
-            string line = reader.ReadLine();
-            while(line != null)
-            {
-                i++;
-                line = reader.ReadLine();
-            }
-            reader.Close();
-            var oStream = new FileStream("mariani1.csv", FileMode.Append, FileAccess.Write, FileShare.Read);
-            BinaryWriter writer = new BinaryWriter(oStream);
-            string linea = $"{anno};{regione};{t_femm};{t_masc};{t_both};{val_rand};{logico};{i}".PadRight(200);
-            byte[] data = Encoding.ASCII.GetBytes(linea);
-            writer.Write(data);
-
-            writer.Close();
-            oStream.Close();
-        }
         private void button1_Click(object sender, EventArgs e)
         {
             string logicoString;
@@ -66,7 +46,7 @@ namespace Mariani_ElaborazioneCSV
                         logicoString = "true";
 
                     string regione = textBox2.Text;
-                    Azione5(anno.ToString(), regione, t_femm, t_masc, t_both, val_rand, logicoString);
+                    ElaborazioneCSV.Azione5(anno.ToString(), regione, t_femm, t_masc, t_both, val_rand, logicoString);
                     MessageBox.Show("Azione eseguita correttamente", "Informazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
